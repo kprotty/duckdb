@@ -347,3 +347,8 @@ extension/extension_config_local.cmake
 
 # extension_external dir
 extension_external
+
+# Zig build system
+!build.zig
+zig-cache/
+zig-out/

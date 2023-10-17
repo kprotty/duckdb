@@ -166,15 +166,15 @@ pub fn build(b: *std.build.Builder) void {
         });
 
         const dirname = std.fs.path.dirname(path) orelse unreachable;
-        dep.addIncludePath(dirname);
+        dep.addIncludePath(.{ .path = dirname });
 
         for (include_paths.items) |include| {
-            dep.addIncludePath(include);
+            dep.addIncludePath(.{ .path = include });
         }
 
         for (args[2..]) |source| {
             const src_path = std.fs.path.join(b.allocator, &[_][]const u8{ dirname, source }) catch unreachable;
-            dep.addCSourceFile(src_path, cxx_flags.items);
+            dep.addCSourceFile(.{ .file = .{ .path = src_path }, .flags = cxx_flags.items });
         }
 
         dep.linkLibCpp();
@@ -197,11 +197,11 @@ pub fn build(b: *std.build.Builder) void {
         });
 
         const include_path = std.fs.path.join(b.allocator, &[_][]const u8{ dirname, "include" }) catch unreachable;
-        dep.addIncludePath(include_path);
-        dep.addIncludePath(dirname);
+        dep.addIncludePath(.{ .path = include_path });
+        dep.addIncludePath(.{ .path = dirname });
 
         for (include_paths.items) |include| {
-            dep.addIncludePath(include);
+            dep.addIncludePath(.{ .path = include });
         }
 
         var sources = std.ArrayList([]const u8).init(b.allocator);
@@ -225,7 +225,7 @@ pub fn build(b: *std.build.Builder) void {
             if (std.mem.endsWith(u8, source, ".inc")) continue; // TODO: handle .inc files
             const src_path = std.fs.path.join(b.allocator, &[_][]const u8{ dirname, source }) catch unreachable;
             const cstd = if (std.mem.endsWith(u8, src_path, ".c")) "" else "-std=c++11";
-            dep.addCSourceFile(src_path, &[_][]const u8{cstd});
+            dep.addCSourceFile(.{ .file = .{ .path = src_path }, .flags = &[_][]const u8{cstd} });
         }
 
         dep.linkLibCpp();
